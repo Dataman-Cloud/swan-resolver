@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
+
+	"github.com/Dataman-Cloud/swan-resolver/nameserver"
 
 	"github.com/urfave/cli"
 	"golang.org/x/net/context"
@@ -33,12 +37,41 @@ func ServerCommand() cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			resolver := NewResolver(NewConfig(c))
+			resolver := nameserver.NewResolver(nameserver.NewConfig(c))
+			go func() {
+				i := 0
+				for {
+					e := nameserver.RecordGeneratorChangeEvent{
+						Change:       "add",
+						Type:         aOrSrv(),
+						Ip:           "192.168.1.1",
+						Port:         "1234",
+						DomainPrefix: domainGen(i),
+					}
+					fmt.Println(e)
+					resolver.RecordGeneratorChangeChan() <- &e
+					time.Sleep(time.Second * 8)
+					i += 1
+				}
+			}()
 			resolver.Start(context.Background())
 
 			return nil
 		},
 	}
+}
+
+func aOrSrv() string {
+	rand.Seed(time.Now().UnixNano())
+	if rand.Intn(1024)%2 == 0 {
+		return "a"
+	} else {
+		return "srv"
+	}
+}
+
+func domainGen(i int) string {
+	return fmt.Sprintf("task%d.appname.username.swan", i)
 }
 
 func main() {
