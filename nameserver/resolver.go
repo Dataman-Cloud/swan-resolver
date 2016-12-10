@@ -23,6 +23,8 @@ func NewResolver(config *Config) *Resolver {
 	rr := RecordGenerator{
 		RecordGeneratorChangeChan: make(chan *RecordGeneratorChangeEvent, 1),
 	}
+
+	rr.Domain = res.config.Domain
 	rr.As = make(map[string]map[string]struct{})
 	rr.SRVs = make(map[string]map[string]struct{})
 
@@ -89,7 +91,6 @@ func (res *Resolver) HandleSwan(w dns.ResponseWriter, r *dns.Msg) {
 	switch r.Question[0].Qtype {
 	case dns.TypeSRV:
 		errs.Add(res.handleSRV(rs, name, m, r))
-		fmt.Println(m)
 	case dns.TypeA:
 		errs.Add(res.handleA(rs, name, m))
 	case dns.TypeSOA:
@@ -262,8 +263,6 @@ func (res *Resolver) Serve() (startedCh <-chan struct{}, errCh chan error) {
 		TsigSecret:        nil,
 		NotifyStartedFunc: func() { close(ch) },
 	}
-
-	fmt.Println(server.Addr)
 
 	go func() {
 		defer close(errCh)

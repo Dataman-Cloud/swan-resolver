@@ -8,6 +8,7 @@ import (
 
 	"github.com/Dataman-Cloud/swan-resolver/nameserver"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
 	"golang.org/x/net/context"
 )
@@ -30,6 +31,11 @@ func ServerCommand() cli.Command {
 				Usage: "default ip addr",
 			},
 
+			cli.StringFlag{
+				Name:  "log-level",
+				Value: "debug",
+			},
+
 			cli.IntFlag{
 				Name:  "port",
 				Value: 53,
@@ -37,6 +43,9 @@ func ServerCommand() cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
+			level, _ := logrus.ParseLevel(c.String("log-level"))
+			logrus.SetLevel(level)
+
 			resolver := nameserver.NewResolver(nameserver.NewConfig(c))
 			go func() {
 				i := 0
@@ -71,7 +80,7 @@ func aOrSrv() string {
 }
 
 func domainGen(i int) string {
-	return fmt.Sprintf("task%d.appname.username.swan", i)
+	return fmt.Sprintf("task%d.appname.username", i)
 }
 
 func main() {

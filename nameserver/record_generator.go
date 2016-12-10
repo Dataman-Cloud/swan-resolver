@@ -68,7 +68,7 @@ func (rg *RecordGenerator) WatchEvent(ctx context.Context) {
 			return
 		case e := <-rg.RecordGeneratorChangeChan:
 			if e.Change == "add" {
-				aDomain := e.DomainPrefix + "." + rg.Domain
+				aDomain := e.DomainPrefix + "." + rg.Domain + "."
 				rg.As.add(aDomain, e.Ip)
 
 				if e.Type == "srv" {
@@ -77,7 +77,7 @@ func (rg *RecordGenerator) WatchEvent(ctx context.Context) {
 			}
 
 			if e.Change == "del" {
-				aDomain := e.DomainPrefix + "." + rg.Domain
+				aDomain := e.DomainPrefix + "." + rg.Domain + "."
 				rg.As.del(aDomain)
 
 				if e.Type == "srv" {
