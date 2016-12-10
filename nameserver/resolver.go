@@ -84,8 +84,6 @@ func (res *Resolver) HandleSwan(w dns.ResponseWriter, r *dns.Msg) {
 	rs := res.records()
 	name := strings.ToLower(cleanWild(r.Question[0].Name))
 
-	fmt.Println(name)
-	fmt.Println(r.Question[0].Qtype)
 	logrus.Debugf("resolve dns hostname %s", name)
 
 	switch r.Question[0].Qtype {

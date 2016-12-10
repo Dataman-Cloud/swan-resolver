@@ -2,6 +2,8 @@ package nameserver
 
 import (
 	"golang.org/x/net/context"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type rrs map[string]map[string]struct{}
@@ -12,6 +14,8 @@ func (r rrs) del(name string) bool {
 }
 
 func (r rrs) add(name, host string) bool {
+	logrus.Debugf("add new record for %s %s ", name, host)
+
 	if host == "" {
 		return false
 	}
