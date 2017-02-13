@@ -191,7 +191,13 @@ func (res *Resolver) handleA(rs *RecordGenerator, name string, m *dns.Msg) error
 		}
 	}
 
+	recordsAdded := make([]string, 0)
 	for _, host := range records {
+		if stringInSlice(host, recordsAdded) { // make sure no duplicated record added to A
+			continue
+		}
+		recordsAdded = append(recordsAdded, host)
+
 		rr, err := res.formatA(name, host)
 		if err != nil {
 			errs.Add(err)
