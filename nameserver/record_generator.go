@@ -1,9 +1,8 @@
 package nameserver
 
 import (
-	"golang.org/x/net/context"
-
 	"github.com/Sirupsen/logrus"
+	"golang.org/x/net/context"
 )
 
 // RecordGenerator contains DNS records and methods to access and manipulate
@@ -36,6 +35,7 @@ func (r rrs) del(name string, host string) bool {
 			}
 			if index > -1 {
 				hosts = append(hosts[:index], hosts[index+1:]...)
+				r[name] = hosts
 			}
 			return true
 		}

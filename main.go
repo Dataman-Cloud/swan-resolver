@@ -95,6 +95,14 @@ func ServerCommand() cli.Command {
 					IsProxy: true,
 				}
 				resolver.RecordGeneratorChangeChan() <- &proxy2
+
+				da1 := nameserver.RecordGeneratorChangeEvent{
+					Change:       "del",
+					Type:         "a",
+					Ip:           "192.168.1.2",
+					DomainPrefix: "1.mysql.xcm.cluster",
+				}
+				resolver.RecordGeneratorChangeChan() <- &da1
 			}()
 			resolver.Start(context.Background())
 
