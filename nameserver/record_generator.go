@@ -20,6 +20,7 @@ type RecordGenerator struct {
 type rrs map[string][]string
 
 func (r rrs) del(name string, host string) bool {
+	logrus.Debugf("del new record for %s %s ", name, host)
 	if host != "" {
 		// remove one host in target r[name]
 		hosts, ok := r[name]
