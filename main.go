@@ -24,20 +24,14 @@ func ServerCommand() cli.Command {
 			},
 
 			cli.StringFlag{
-				Name:  "listener",
-				Value: "0.0.0.0",
-				Usage: "default ip addr",
+				Name:  "listen-addr",
+				Value: "0.0.0.0:53",
+				Usage: "default listen addr",
 			},
 
 			cli.StringFlag{
 				Name:  "log-level",
 				Value: "debug",
-			},
-
-			cli.IntFlag{
-				Name:  "port",
-				Value: 53,
-				Usage: "default port",
 			},
 		},
 		Action: func(c *cli.Context) error {
