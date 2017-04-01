@@ -98,7 +98,9 @@ func ServerCommand() cli.Command {
 				}
 				resolver.RecordGeneratorChangeChan() <- &da1
 			}()
-			resolver.Start(context.Background())
+
+			started := make(chan bool)
+			resolver.Start(context.Background(), started)
 
 			return nil
 		},
