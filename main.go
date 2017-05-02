@@ -40,66 +40,77 @@ func ServerCommand() cli.Command {
 
 			resolver := nameserver.NewResolver(nameserver.NewConfig(c))
 			go func() {
-				a := nameserver.RecordGeneratorChangeEvent{
-					Change:       "add",
-					Type:         "a",
-					Ip:           "192.168.1.1",
-					DomainPrefix: "0.mysql.xcm.cluster",
-				}
-				resolver.RecordGeneratorChangeChan() <- &a
-
-				a1 := nameserver.RecordGeneratorChangeEvent{
-					Change:       "add",
-					Type:         "a",
-					Ip:           "192.168.1.2",
-					DomainPrefix: "1.mysql.xcm.cluster",
-				}
-				resolver.RecordGeneratorChangeChan() <- &a1
-
-				srv := nameserver.RecordGeneratorChangeEvent{
-					Change:       "add",
-					Type:         "srv",
-					Ip:           "192.168.1.3",
-					Port:         "1234",
-					DomainPrefix: "0.nginx.xcm.cluster",
-				}
-				resolver.RecordGeneratorChangeChan() <- &srv
-
-				srv1 := nameserver.RecordGeneratorChangeEvent{
-					Change:       "add",
-					Type:         "srv",
-					Ip:           "192.168.1.4",
-					Port:         "1235",
-					DomainPrefix: "1.nginx.xcm.cluster",
-				}
-				resolver.RecordGeneratorChangeChan() <- &srv1
-
-				proxy1 := nameserver.RecordGeneratorChangeEvent{
+				a := nameserver.RecordChangeEvent{
 					Change:  "add",
-					Type:    "a",
+					Type:    nameserver.A,
+					Ip:      "192.168.1.1",
+					Cluster: "cluster",
+					RunAs:   "xcm",
+					AppName: "nginx",
+					SlotID:  "1",
+				}
+				resolver.RecordChangeChan <- &a
+
+				a1 := nameserver.RecordChangeEvent{
+					Change:  "add",
+					Type:    nameserver.A,
+					Ip:      "192.168.1.2",
+					Cluster: "cluster",
+					RunAs:   "xcm",
+					AppName: "nginx",
+					SlotID:  "0",
+				}
+				resolver.RecordChangeChan <- &a1
+
+				srv := nameserver.RecordChangeEvent{
+					Change:  "add",
+					Type:    nameserver.SRV ^ nameserver.A,
+					Ip:      "192.168.1.3",
+					Port:    "1234",
+					Cluster: "cluster",
+					RunAs:   "xcm",
+					AppName: "nginx",
+					SlotID:  "2",
+				}
+				resolver.RecordChangeChan <- &srv
+
+				srv1 := nameserver.RecordChangeEvent{
+					Change:  "add",
+					Type:    nameserver.SRV ^ nameserver.A,
+					Ip:      "192.168.1.4",
+					Port:    "1235",
+					Cluster: "cluster",
+					RunAs:   "xcm",
+					AppName: "nginx",
+					SlotID:  "3",
+				}
+				resolver.RecordChangeChan <- &srv1
+
+				proxy1 := nameserver.RecordChangeEvent{
+					Change:  "add",
+					Type:    nameserver.A,
 					Ip:      "192.168.1.5",
 					IsProxy: true,
 				}
-				resolver.RecordGeneratorChangeChan() <- &proxy1
+				resolver.RecordChangeChan <- &proxy1
 
-				proxy2 := nameserver.RecordGeneratorChangeEvent{
+				proxy2 := nameserver.RecordChangeEvent{
 					Change:  "add",
-					Type:    "a",
+					Type:    nameserver.A,
 					Ip:      "192.168.1.6",
 					IsProxy: true,
 				}
-				resolver.RecordGeneratorChangeChan() <- &proxy2
+				resolver.RecordChangeChan <- &proxy2
 
-				da1 := nameserver.RecordGeneratorChangeEvent{
-					Change:       "del",
-					Type:         "a",
-					Ip:           "192.168.1.2",
-					DomainPrefix: "1.mysql.xcm.cluster",
+				da1 := nameserver.RecordChangeEvent{
+					Change: "del",
+					Type:   nameserver.A,
+					Ip:     "192.168.1.2",
 				}
-				resolver.RecordGeneratorChangeChan() <- &da1
+				resolver.RecordChangeChan <- &da1
 			}()
 
-			started := make(chan bool)
+			started := make(chan bool, 1)
 			resolver.Start(context.Background(), started)
 
 			return nil
