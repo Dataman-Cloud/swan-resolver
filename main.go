@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/Dataman-Cloud/swan-resolver/nameserver"
 
 	"github.com/Sirupsen/logrus"
@@ -111,9 +108,7 @@ func ServerCommand() cli.Command {
 			}()
 
 			started := make(chan bool, 1)
-			resolver.Start(context.Background(), started)
-
-			return nil
+			return resolver.Start(context.Background(), started)
 		},
 	}
 }
@@ -129,8 +124,5 @@ func main() {
 		ServerCommand(),
 	}
 
-	if err := resolver.Run(os.Args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	resolver.RunAndExitOnError()
 }
