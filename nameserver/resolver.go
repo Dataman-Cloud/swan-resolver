@@ -55,19 +55,19 @@ func (resolver *Resolver) WatchEvent(ctx context.Context) {
 			return
 		case e := <-resolver.RecordChangeChan:
 			if e.Change == "del" {
-				resolver.recordHolder.Del(RecordFromRecordChangeEvent(e))
+				resolver.recordHolder.Del(e.record())
 			}
 
 			if e.Change == "add" {
-				resolver.recordHolder.Add(RecordFromRecordChangeEvent(e))
+				resolver.recordHolder.Add(e.record())
 			}
 
 		}
 	}
 }
 
-func (res *Resolver) Start(ctx context.Context, started chan bool) error {
-	dns.HandleFunc("swan.com.", res.HandleSwan)
+func (res *Resolver) Start(ctx context.Context, started chan bool, domain string) error {
+	dns.HandleFunc(domain, res.HandleSwan)
 	//dns.HandleFunc(res.config.Domain, res.HandleSwan)
 	dns.HandleFunc(".", res.HandleNonSwan(res.defaultFwd))
 
